@@ -1,0 +1,3 @@
+rootProject.name = 'DailyHoroscope'
+
+include ':app'
