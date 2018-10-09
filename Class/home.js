@@ -9,6 +9,7 @@ import {StyleSheet,
         Button,SegmentedControlIOS,
         Dimensions} from 'react-native'
 import {detail} from './detail';
+
 import shareData from '../Source/File/content.json'
 
 var kScreenWidth = Dimensions.get('window').width;

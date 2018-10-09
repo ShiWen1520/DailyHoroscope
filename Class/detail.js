@@ -11,12 +11,41 @@ import {StackNavigator} from 'react-navigation'
 var kScreenWidth = Dimensions.get('window').width
 var  kScreenHeight = Dimensions.get('window').height
 
+var labelItems = []
+
 class LabelItem extends React.Component {
     render() {
         return(
             <Text style={styles.labelItem}>
              {this.props.text}
             </Text>
+        );
+    }
+}
+
+class LabelItemList extends React.Component {
+    render() {
+
+        var labelItemArr = [];
+        for(var i in this.props.labelItemArray) {
+            console.log(i);
+            var label = (
+                <View key = {i}>
+                  <LabelItem 
+                  text={this.props.labelItemArray[i].title + '：' + this.props.labelItemArray[i].value}
+                  />
+                </View>
+                
+            );
+            labelItemArr.push(label);
+        }
+
+        console.log('labelItemArr' + labelItemArr);
+
+        return(
+            <View style={styles.labelItemBg}>
+              {labelItemArr}
+            </View>
         );
     }
 }
@@ -42,15 +71,15 @@ export class detail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            summary:null,
-            Qfriend:null,
-            allIndex:null,
-            colorIndex:null,
-            loveIndex:null,
-            healthIndex:null,
-            moneyIndex:null,
-            numberIndex:null,
-            workIndex:null,
+            summary:'',
+            Qfriend:'',
+            allIndex:'',
+            colorIndex:'',
+            loveIndex:'',
+            healthIndex:'',
+            moneyIndex:'',
+            numberIndex:'',
+            workIndex:'',
         }
 
     }
@@ -71,17 +100,37 @@ export class detail extends React.Component {
             console.log(responseData);
             let data = responseData;
 
+            let all = data.all;
+
+            // if(labelItems.count > 0) {
+            //     console.log('数组中有值');
+            //     labelItems.splice(0,labelItems.count);
+            // }
+
+            if(data) {
+                all.length>0 ? labelItems.push({title:'综合指数',value:data.all}) : null;
+                // data.color.length>0 ? labelItems.push({title:'幸运色',value:data.color}) : null;
+                // data.love.length>0 ? labelItems.push({title:'恋爱指数',value:data.love}) : null;
+                // data.health.length>0 ? labelItems.push({title:'健康指数',value:data.health}) : null;
+                // data.money.length>0 ? labelItems.push({title:'财运指数',value:data.money}) : null;
+                // data.number.length>0 ? labelItems.push({title:'幸运数字',value:data.number}) : null;
+                // data.QFriend.length>0 ? labelItems.push({title:'速配星座',value:data.QFriend}) : null;
+                // data.work.length>0 ? labelItems.push({title:'工作指数',value:data.work}) : null;
+            }
+
+            console.log('labelItems：' + labelItems);
+
             this.setState({
                 summary:data.summary ? data.summary : '',
-                // date:data.datetime ? data.datetime : '',
-                // allIndex:data.all ? data.all : '',
-                // colorIndex:data.color ? data.color : '',
-                // loveIndex:data.love ? data.love : '',
-                // healthIndex:data.health ? data.health : '',
-                // moneyIndex:data.money ? data.money : '',
-                // numberIndex:data.number ? data.number : '',
-                // Qfriend:data.QFriend ? data.QFriend : '',
-                // workIndex:data.work ? data.work : '',
+                date:data.datetime ? data.datetime : '',
+                allIndex:data.all ? data.all : '',
+                colorIndex:data.color ? data.color : '',
+                loveIndex:data.love ? data.love : '',
+                healthIndex:data.health ? data.health : '',
+                moneyIndex:data.money ? data.money : '',
+                numberIndex:data.number ? data.number : '',
+                Qfriend:data.QFriend ? data.QFriend : '',
+                workIndex:data.work ? data.work : '',
             });
         })
         .catch((error) => {
@@ -95,10 +144,6 @@ export class detail extends React.Component {
     }
 
     render() {
-
-        if(!this.state.summary) {
-            return this.renderLoadingView;
-        }
 
         const { params } = this.props.navigation.state;
         return (
@@ -124,40 +169,7 @@ export class detail extends React.Component {
               {'     ' + this.state.summary}
             </Text>
 
-            <View style={styles.labelItemBg}>
-            {/* <LabelItem 
-              style={styles.allIndex}
-              text={'综合指数：' + this.state.allIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'速配星座：' + this.state.Qfriend}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'幸运色：' + this.state.colorIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'恋爱指数：' + this.state.loveIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'健康指数：' + this.state.healthIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'财运指数：' + this.state.moneyIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'幸运数字：' + this.state.numberIndex}
-            />
-            <LabelItem 
-              style={styles.Qfriend}
-              text={'工作指数：' + this.state.workIndex}
-            /> */}
-            </View>
+            <LabelItemList labelItemArray={labelItems}></LabelItemList>
          
              <View style={styles.bottomSpace}></View>
             </ScrollView>
@@ -167,15 +179,6 @@ export class detail extends React.Component {
         );
     }
 
-    renderLoadingView(){
-        return (
-            <View style={styles.loadingBg}>
-             <Text style={styles.alertTitle}>
-             正在加载电影数据......
-             </Text>
-            </View>
-        );
-    }
 }
 
 const styles = StyleSheet.create({
@@ -207,8 +210,8 @@ const styles = StyleSheet.create({
         borderRadius:6,
     },
     img: {
-        top:25,
-        left:30,
+        marginTop:25,
+        marginLeft:30,
         width:40,
         height:40,
     },
@@ -216,24 +219,24 @@ const styles = StyleSheet.create({
         color:'white',
         fontSize:17,
         textAlign:'left',
-        top:-5,
+        marginTop:-30,
         marginRight:30,
-        left:100,
+        marginLeft:100,
     },
     date: {
         color:'white',
         fontSize:15,
         textAlign:'left',
-        top:30,
+        marginTop:40,   //设置控件之间的距离，最好用marginTop，不要用top
         marginRight:15,
-        left:15,
+        marginLeft:15,
     },
     summary: {
         color:'white',
         fontSize:15,
         textAlign:'left',
-        top:55,
-        left:15,
+        marginTop:20,
+        marginLeft:15,
         marginRight:25,
         lineHeight:20,
     },
@@ -241,18 +244,18 @@ const styles = StyleSheet.create({
     //LabelItem
    labelItemBg:{
     flexDirection:'row',
-    top:65,
-    left:25,
+    marginTop:30,
+    marginLeft:25,
     justifyContent:'space-between',
-    // backgroundColor:'red',
     flexWrap:'wrap',
     width:kScreenWidth - 50 - 20,
+    backgroundColor:'red',
 },
    labelItem: {
     color:'white',
     fontSize:15,
     textAlign:'left',
-    marginTop:25,
+    marginBottom:25,
     width:(kScreenWidth - 50 - 20)/2,
    },
 
